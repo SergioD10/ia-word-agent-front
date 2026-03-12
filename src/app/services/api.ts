@@ -14,10 +14,9 @@ export class ApiService {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("tipo_formato", tipoFormato);
 
-    const params = new HttpParams().set('tipo_formato', tipoFormato);
-
-    return this.http.post<any>(`${this.API_URL}/analyze`, formData, { params });
+    return this.http.post<any>(`${this.API_URL}/analyze`, formData);
 
   }
 

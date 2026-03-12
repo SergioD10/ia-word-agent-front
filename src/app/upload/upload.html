@@ -19,12 +19,11 @@
           </ul>
         </c-alert>
 
-        <!-- Selector de tipo de formato -->
         <div class="mb-3">
           <label class="form-label"><strong>Tipo de Formato del Documento:</strong></label>
           <select class="form-select" [(ngModel)]="tipoFormato" [disabled]="loading">
             <option *ngFor="let tipo of TIPOS_FORMATO" [value]="tipo.value">
-              {{ tipo.label }} - {{ tipo.description }}
+              {{ tipo.label }}
             </option>
           </select>
         </div>
@@ -132,211 +131,80 @@
         </c-card-body>
       </c-card>
 
-      <!-- Resumen -->
+      <!-- Porcentaje de Aprobación -->
       <c-card class="shadow-sm mb-3">
-        <c-card-header class="bg-info text-white">
-          <svg cIcon name="cilTask" class="me-2"></svg>
-          <strong>Resumen</strong>
-        </c-card-header>
-        <c-card-body>
-          <p class="mb-0">{{ analysis.resumen }}</p>
-        </c-card-body>
-      </c-card>
-
-      <!-- Cumplimiento General -->
-      <c-card class="shadow-sm mb-3" *ngIf="analysis.cumplimiento_general">
         <c-card-header [ngClass]="{
-          'bg-success text-white': analysis.cumplimiento_general.porcentaje >= 90,
-          'bg-warning text-dark': analysis.cumplimiento_general.porcentaje >= 70 && analysis.cumplimiento_general.porcentaje < 90,
-          'bg-danger text-white': analysis.cumplimiento_general.porcentaje < 70
+          'bg-success text-white': analysis.porcentaje_aprobacion >= 80,
+          'bg-warning text-dark': analysis.porcentaje_aprobacion >= 60 && analysis.porcentaje_aprobacion < 80,
+          'bg-danger text-white': analysis.porcentaje_aprobacion < 60
         }">
           <svg cIcon name="cilCheckCircle" class="me-2"></svg>
-          <strong>Cumplimiento General: {{ analysis.cumplimiento_general.porcentaje }}%</strong>
-          <c-badge [color]="analysis.cumplimiento_general.porcentaje >= 90 ? 'light' : analysis.cumplimiento_general.porcentaje >= 70 ? 'dark' : 'light'" class="float-end">
-            {{ analysis.cumplimiento_general.estado }}
-          </c-badge>
-        </c-card-header>
-      </c-card>
-
-      <!-- Validaciones de Formato -->
-      <c-card class="shadow-sm mb-3" *ngIf="analysis.validaciones_formato">
-        <c-card-header class="bg-primary text-white">
-          <svg cIcon name="cilTask" class="me-2"></svg>
-          <strong>Validaciones de Formato</strong>
+          <strong>Calidad del Documento: {{ analysis.porcentaje_aprobacion }}%</strong>
         </c-card-header>
         <c-card-body>
-          <div class="mb-3">
-            <div class="d-flex align-items-center mb-2">
-              <c-badge [color]="analysis.validaciones_formato.letra_calibri_12.cumple ? 'success' : 'danger'" class="me-2">
-                {{ analysis.validaciones_formato.letra_calibri_12.cumple ? '✓' : '✗' }}
-              </c-badge>
-              <strong>Letra Calibri 12 y color negro</strong>
+          <div class="progress" style="height: 25px;">
+            <div 
+              class="progress-bar" 
+              [ngClass]="{
+                'bg-success': analysis.porcentaje_aprobacion >= 80,
+                'bg-warning': analysis.porcentaje_aprobacion >= 60 && analysis.porcentaje_aprobacion < 80,
+                'bg-danger': analysis.porcentaje_aprobacion < 60
+              }"
+              [style.width.%]="analysis.porcentaje_aprobacion"
+              role="progressbar"
+            >
+              {{ analysis.porcentaje_aprobacion }}%
             </div>
-            <p class="ms-4 mb-0 text-muted" *ngIf="!analysis.validaciones_formato.letra_calibri_12.cumple">
-              {{ analysis.validaciones_formato.letra_calibri_12.observaciones }}
-            </p>
           </div>
+        </c-card-body>
+      </c-card>
 
-          <div class="mb-3">
-            <div class="d-flex align-items-center mb-2">
-              <c-badge [color]="analysis.validaciones_formato.tabla_contenido.cumple ? 'success' : 'danger'" class="me-2">
-                {{ analysis.validaciones_formato.tabla_contenido.cumple ? '✓' : '✗' }}
-              </c-badge>
-              <strong>Tabla de contenido</strong>
+      <!-- Fragmentos de Mejora -->
+      <c-card class="shadow-sm mb-3" *ngIf="analysis.fragmentos_mejora && analysis.fragmentos_mejora.length > 0">
+        <c-card-header class="bg-info text-white">
+          <svg cIcon name="cilTask" class="me-2"></svg>
+          <strong>Fragmentos donde se Recomienda Mejora</strong>
+        </c-card-header>
+        <c-card-body>
+          <div *ngFor="let fragmento of analysis.fragmentos_mejora; let i = index" class="mb-4 pb-3 border-bottom" [ngClass]="{'mb-0 pb-0 border-bottom-0': i === analysis.fragmentos_mejora.length - 1}">
+            <div class="mb-2">
+              <c-badge color="info" class="me-2">Página {{ fragmento.pagina }}</c-badge>
             </div>
-            <p class="ms-4 mb-0 text-muted" *ngIf="!analysis.validaciones_formato.tabla_contenido.cumple">
-              {{ analysis.validaciones_formato.tabla_contenido.observaciones }}
-            </p>
-          </div>
-
-          <div class="mb-3">
-            <div class="d-flex align-items-center mb-2">
-              <c-badge [color]="analysis.validaciones_formato.tabla_datos_generales.cumple ? 'success' : 'danger'" class="me-2">
-                {{ analysis.validaciones_formato.tabla_datos_generales.cumple ? '✓' : '✗' }}
-              </c-badge>
-              <strong>Tabla de datos generales</strong>
-            </div>
-            <p class="ms-4 mb-0 text-muted" *ngIf="!analysis.validaciones_formato.tabla_datos_generales.cumple">
-              {{ analysis.validaciones_formato.tabla_datos_generales.observaciones }}
-            </p>
-          </div>
-
-          <div class="mb-0">
-            <div class="d-flex align-items-center mb-2">
-              <c-badge [color]="analysis.validaciones_formato.tabla_condiciones_uso.cumple ? 'success' : 'danger'" class="me-2">
-                {{ analysis.validaciones_formato.tabla_condiciones_uso.cumple ? '✓' : '✗' }}
-              </c-badge>
-              <strong>Tabla de condiciones de uso</strong>
-            </div>
-            <p class="ms-4 mb-0 text-muted" *ngIf="!analysis.validaciones_formato.tabla_condiciones_uso.cumple">
-              {{ analysis.validaciones_formato.tabla_condiciones_uso.observaciones }}
-            </p>
-          </div>
-
-          <hr class="my-3">
-
-          <div class="mb-0">
-            <div class="d-flex align-items-center mb-2">
-              <c-badge [color]="analysis.validaciones_formato.logos_encabezado.cumple ? 'success' : 'danger'" class="me-2">
-                {{ analysis.validaciones_formato.logos_encabezado.cumple ? '✓' : '✗' }}
-              </c-badge>
-              <strong>Logos en el encabezado</strong>
-            </div>
-            <div class="ms-4">
-              <p class="mb-1"><strong>Logos requeridos:</strong></p>
-              <ul class="mb-2">
-                <li *ngFor="let logo of analysis.validaciones_formato.logos_encabezado.logos_requeridos">{{ logo }}</li>
-              </ul>
-              <p class="mb-1"><strong>Logos encontrados:</strong></p>
-              <ul class="mb-2" *ngIf="analysis.validaciones_formato.logos_encabezado.logos_encontrados.length > 0">
-                <li *ngFor="let logo of analysis.validaciones_formato.logos_encabezado.logos_encontrados">{{ logo }}</li>
-              </ul>
-              <p class="text-muted mb-0" *ngIf="analysis.validaciones_formato.logos_encabezado.logos_encontrados.length === 0">
-                No se encontraron logos
-              </p>
-              <p class="text-muted mb-0 mt-2" *ngIf="!analysis.validaciones_formato.logos_encabezado.cumple">
-                {{ analysis.validaciones_formato.logos_encabezado.observaciones }}
+            <div class="bg-light p-3 rounded mb-2">
+              <p class="mb-0 font-monospace text-muted">
+                <em>"{{ fragmento.fragmento }}"</em>
               </p>
             </div>
+            <div>
+              <strong class="text-success">Recomendación:</strong>
+              <p class="mb-0">{{ fragmento.recomendacion }}</p>
+            </div>
           </div>
         </c-card-body>
       </c-card>
 
-      <!-- Validaciones de Contenido -->
-      <c-card class="shadow-sm mb-3" *ngIf="analysis.validaciones_contenido">
-        <c-card-header class="bg-secondary text-white">
-          <svg cIcon name="cilTask" class="me-2"></svg>
-          <strong>Validaciones de Contenido</strong>
-        </c-card-header>
-        <c-card-body>
-          <div class="mb-3">
-            <div class="d-flex align-items-center mb-2">
-              <c-badge [color]="analysis.validaciones_contenido.cambios_documentados.cumple ? 'success' : 'danger'" class="me-2">
-                {{ analysis.validaciones_contenido.cambios_documentados.cumple ? '✓' : '✗' }}
-              </c-badge>
-              <strong>Cambios documentados (Front/Back)</strong>
-            </div>
-            <p class="ms-4 mb-0 text-muted" *ngIf="!analysis.validaciones_contenido.cambios_documentados.cumple">
-              {{ analysis.validaciones_contenido.cambios_documentados.observaciones }}
-            </p>
-          </div>
-
-          <div class="mb-3">
-            <div class="d-flex align-items-center mb-2">
-              <c-badge [color]="analysis.validaciones_contenido.informacion_concisa.cumple ? 'success' : 'danger'" class="me-2">
-                {{ analysis.validaciones_contenido.informacion_concisa.cumple ? '✓' : '✗' }}
-              </c-badge>
-              <strong>Información concisa y técnica</strong>
-            </div>
-            <p class="ms-4 mb-0 text-muted" *ngIf="!analysis.validaciones_contenido.informacion_concisa.cumple">
-              {{ analysis.validaciones_contenido.informacion_concisa.observaciones }}
-            </p>
-          </div>
-
-          <div class="mb-3">
-            <div class="d-flex align-items-center mb-2">
-              <c-badge [color]="analysis.validaciones_contenido.espacios_excesivos.cumple ? 'success' : 'danger'" class="me-2">
-                {{ analysis.validaciones_contenido.espacios_excesivos.cumple ? '✓' : '✗' }}
-              </c-badge>
-              <strong>Sin espacios excesivos</strong>
-            </div>
-            <p class="ms-4 mb-0 text-muted" *ngIf="!analysis.validaciones_contenido.espacios_excesivos.cumple">
-              {{ analysis.validaciones_contenido.espacios_excesivos.observaciones }}
-            </p>
-          </div>
-
-          <div class="mb-0">
-            <div class="d-flex align-items-center mb-2">
-              <c-badge [color]="analysis.validaciones_contenido.codigo_sin_modificar.cumple ? 'success' : 'danger'" class="me-2">
-                {{ analysis.validaciones_contenido.codigo_sin_modificar.cumple ? '✓' : '✗' }}
-              </c-badge>
-              <strong>Código sin modificar</strong>
-            </div>
-            <p class="ms-4 mb-0 text-muted" *ngIf="!analysis.validaciones_contenido.codigo_sin_modificar.cumple">
-              {{ analysis.validaciones_contenido.codigo_sin_modificar.observaciones }}
-            </p>
-          </div>
-        </c-card-body>
-      </c-card>
-
-      <!-- Puntos principales -->
-      <c-card class="shadow-sm mb-3" *ngIf="analysis.puntos_principales && analysis.puntos_principales.length > 0">
-        <c-card-header class="bg-success text-white">
-          <svg cIcon name="cilCheckCircle" class="me-2"></svg>
-          <strong>Puntos Principales</strong>
-        </c-card-header>
-        <c-card-body>
-          <ul class="mb-0">
-            <li *ngFor="let punto of analysis.puntos_principales">{{ punto }}</li>
-          </ul>
-        </c-card-body>
-      </c-card>
-
-      <!-- Imágenes -->
-      <c-card class="shadow-sm mb-3" *ngIf="analysis.imagenes && analysis.imagenes.length > 0">
+      <!-- Indicadores Faltantes -->
+      <c-card class="shadow-sm mb-3" *ngIf="analysis.indicadores_faltantes && analysis.indicadores_faltantes.length > 0">
         <c-card-header class="bg-warning text-dark">
-          <svg cIcon name="cilFile" class="me-2"></svg>
-          <strong>Imágenes Encontradas</strong>
+          <svg cIcon name="cilTask" class="me-2"></svg>
+          <strong>Información Faltante según Estándar de Calidad</strong>
         </c-card-header>
         <c-card-body>
-          <div *ngFor="let imagen of analysis.imagenes" class="mb-2">
-            <c-badge color="warning" class="me-2">Página {{ imagen.pagina }}</c-badge>
-            <span>{{ imagen.descripcion }}</span>
+          <div *ngFor="let indicador of analysis.indicadores_faltantes; let i = index" class="mb-3 pb-3 border-bottom" [ngClass]="{'mb-0 pb-0 border-bottom-0': i === analysis.indicadores_faltantes.length - 1}">
+            <div class="mb-2">
+              <c-badge color="warning" class="me-2">{{ indicador.aspecto }}</c-badge>
+            </div>
+            <p class="mb-1"><strong>Descripción:</strong> {{ indicador.descripcion }}</p>
+            <p class="mb-0"><strong class="text-danger">Impacto:</strong> {{ indicador.impacto }}</p>
           </div>
         </c-card-body>
       </c-card>
 
-      <!-- Información detallada -->
-      <c-card class="shadow-sm mb-3" *ngIf="analysis.informacion_detallada && analysis.informacion_detallada.length > 0">
-        <c-card-header class="bg-secondary text-white">
-          <svg cIcon name="cilTask" class="me-2"></svg>
-          <strong>Información Detallada</strong>
-        </c-card-header>
-        <c-card-body>
-          <div *ngFor="let info of analysis.informacion_detallada" class="mb-3 pb-3 border-bottom">
-            <c-badge color="secondary" class="mb-2">Página {{ info.pagina }}</c-badge>
-            <p class="mb-0">{{ info.contenido }}</p>
-          </div>
+      <!-- Sin fragmentos ni indicadores -->
+      <c-card class="shadow-sm mb-3" *ngIf="(!analysis.fragmentos_mejora || analysis.fragmentos_mejora.length === 0) && (!analysis.indicadores_faltantes || analysis.indicadores_faltantes.length === 0)">
+        <c-card-body class="text-center">
+          <svg cIcon name="cilCheckCircle" size="3xl" class="text-success mb-3"></svg>
+          <p class="text-success"><strong>¡Excelente! El documento cumple con los estándares de calidad.</strong></p>
         </c-card-body>
       </c-card>
     </div>

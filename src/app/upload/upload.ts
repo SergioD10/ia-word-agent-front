@@ -15,16 +15,16 @@ import {
 import { IconDirective } from '@coreui/icons-angular';
 import { ApiService } from '../services/api';
 
-interface Validacion {
-  cumple: boolean;
-  observaciones: string;
+interface FragmentoMejora {
+  pagina: number;
+  fragmento: string;
+  recomendacion: string;
 }
 
-interface ValidacionLogos {
-  cumple: boolean;
-  logos_encontrados: string[];
-  logos_requeridos: string[];
-  observaciones: string;
+interface IndicadorFaltante {
+  aspecto: string;
+  descripcion: string;
+  impacto: string;
 }
 
 interface DocumentAnalysis {
@@ -33,28 +33,9 @@ interface DocumentAnalysis {
   lider: string;
   compania: string;
   tipo_ejecucion: string;
-  tipo_formato_detectado?: string;
-  resumen: string;
-  puntos_principales: string[];
-  validaciones_formato: {
-    letra_calibri_12: Validacion;
-    tabla_contenido: Validacion;
-    tabla_datos_generales: Validacion;
-    tabla_condiciones_uso: Validacion;
-    logos_encabezado: ValidacionLogos;
-  };
-  validaciones_contenido: {
-    cambios_documentados: Validacion;
-    informacion_concisa: Validacion;
-    espacios_excesivos: Validacion;
-    codigo_sin_modificar: Validacion;
-  };
-  imagenes: Array<{pagina: number, descripcion: string}>;
-  informacion_detallada: Array<{pagina: number, contenido: string}>;
-  cumplimiento_general: {
-    porcentaje: number;
-    estado: string;
-  };
+  porcentaje_aprobacion: number;
+  fragmentos_mejora: FragmentoMejora[];
+  indicadores_faltantes: IndicadorFaltante[];
   tiempo_procesamiento?: number;
 }
 
@@ -86,7 +67,7 @@ export class UploadComponent {
   error = "";
   startTime: number = 0;
   processingTime: number = 0;
-  tipoFormato: string = "estandar";
+  tipoFormato: string = "new_inntech";
 
   // Constantes de validación
   readonly MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB en bytes
@@ -94,10 +75,14 @@ export class UploadComponent {
 
   // Tipos de formato disponibles
   readonly TIPOS_FORMATO = [
-    { value: 'estandar', label: 'Estándar', description: 'Logo de la compañía' },
-    { value: 'tecnico', label: 'Técnico', description: 'Logo de la compañía + Logo técnico' },
-    { value: 'funcional', label: 'Funcional', description: 'Logo de la compañía + Logo funcional' },
-    { value: 'cliente', label: 'Cliente', description: 'Logo de la compañía + Logo del cliente' }
+    { value: 'corona', label: 'GST-FT-005 - Documentación Tecnica Proyectos - Corona', description: '' },
+    { value: 'linea_directa', label: 'GST-FT-005 - Documentación Tecnica Proyectos - Linea Directa', description: '' },
+    { value: 'new_inntech', label: 'GST-FT-005 - Documentación Tecnica Proyectos - New Inntech', description: '' },
+    { value: 'novaventa', label: 'GST-FT-005 - Documentación Tecnica Proyectos - Novaventa - Netw', description: '' },
+    { value: 'nutresa_netw', label: 'GST-FT-005 - Documentación Tecnica Proyectos - Nutresa - Netw Pideky', description: '' },
+    { value: 'nutresa_proyectos', label: 'GST-FT-005 - Documentación Tecnica Proyectos - Nutresa Proyectos', description: '' },
+    { value: 'web_back', label: 'GST-FT-007 - Documentación Tecnica para Soluciones Web - Back', description: '' },
+    { value: 'web_front', label: 'GST-FT-008 - Documentación Tecnica para Soluciones Web - Front', description: '' }
   ];
 
   constructor(
