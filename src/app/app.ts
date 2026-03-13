@@ -30,7 +30,7 @@ import { iconSubset } from './icons/icon-subset';
   styleUrls: ['./app.css']
 })
 export class AppComponent {
-  title = 'IA Word Agent';
+  title: string = 'IA Word Agent';
 
   constructor(private iconSetService: IconSetService) {
     this.iconSetService.icons = { ...iconSubset };
