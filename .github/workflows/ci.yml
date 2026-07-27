@@ -2,7 +2,7 @@ name: frontend-ci
 
 on:
   push:
-    branches: [main, develop]
+    branches: [master]
     paths:
       - 'package.json'
       - 'package-lock.json'
@@ -11,7 +11,7 @@ on:
       - 'src/**'
       - '.github/workflows/ci.yml'
   pull_request:
-    branches: [main, develop]
+    branches: [master]
     paths:
       - 'package.json'
       - 'package-lock.json'
